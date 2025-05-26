@@ -18,8 +18,8 @@ function getTime(time){
 // console.log(getTime(189))
 
 // creat loadVideos
-const loadVideos = () => {
-    fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+const loadVideos = (searchText = '') => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`)
     .then( (res) => res.json())
     .then( (data) => displayVideo(data.videos))
     .catch((error) => console.log(error))
@@ -52,6 +52,32 @@ const loadCategoriesVideos = (id) =>{
     .catch((error) => console.log(error))
 }
 
+// load video details
+const loadDetails = async (videoID) => {
+    // console.log(videoID)
+
+    const uri = `https://openapi.programming-hero.com/api/phero-tube/video/${videoID}`;
+    const res = await fetch(uri);
+    const data = await res.json();
+    displayDetails(data.video)
+}
+
+const displayDetails = (video) =>{
+    // console.log(video)
+
+    const modalContainer = document.getElementById("modal_Details");
+    modalContainer.innerHTML =`
+    <img src="${video.thumbnail}"/>
+    <p>${video.description}</P>
+    `
+
+    // way-1
+    document.getElementById('customModal').click()
+
+    
+}
+
+
 // 
 const demo = {
     "category_id": "1001",
@@ -73,6 +99,7 @@ const demo = {
 }
 // 
 
+// creat  show videos function 
 const displayVideo = (videos) =>{
     const videosContainer = document.getElementById('videos');
     videosContainer.innerHTML="";
@@ -83,7 +110,7 @@ const displayVideo = (videos) =>{
             <div class="min-h-[300px] flex flex-col gap-5 justify-center items-center ">
                 <img src="assets/Icon.png" />
                 <h2 class="text-center text-xl font-bold">
-                Oops!! Sorry, There is nocontent here
+                Oops!! Sorry, There is no content here
                 </h2>
             </div>
             `;
@@ -93,7 +120,7 @@ const displayVideo = (videos) =>{
 
     // creat forEach for item
     videos.forEach((video)=> {
-        console.log(video)
+        // console.log(video)
 
         const card = document.createElement('div');
         card.classList = 'card card-compact '
@@ -119,7 +146,7 @@ const displayVideo = (videos) =>{
     ${video.authors[0].verified === true ? '<img class="w-5" src="https://img.icons8.com/?size=96&id=98A4yZTt9abw&format=png"/>' : '' }    
 
     </div>
-    <p> </p>
+    <p> <button onclick="loadDetails('${video.video_id}')" class="btn btn-sm btn-error"> Details</button> </p>
     </div>
 
   </div>
@@ -136,7 +163,7 @@ const displayCategories = (data) => {
 
     // creat forEach for item
     data.forEach( (item) => {
-        console.log(item)
+        // console.log(item)
 
         // creat a button 
         const buttonContainer = document.createElement('div');
@@ -150,6 +177,10 @@ const displayCategories = (data) => {
     });
 }
 
+
+document.getElementById('search_box').addEventListener("keyup", (e)=>{
+    loadVideos(e.target.value);
+})
 
 loadCategories()
 loadVideos()
